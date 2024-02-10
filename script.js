@@ -182,6 +182,9 @@ window.addEventListener("load", function () {
       this.topMargin = 260;
       this.debug = true;
       this.player = new Player(this);
+      this.fps = 70; // the actual will be a little smaller
+      this.timer = 0;
+      this.interval = 1000 / this.fps;
       this.numberOfObstacles = 10;
       this.obstacles = [];
       this.mouse = {
@@ -216,10 +219,16 @@ window.addEventListener("load", function () {
         console.log(this.debug);
       });
     }
-    render(context) {
-      this.obstacles.forEach((obstacle) => obstacle.draw(context));
-      this.player.draw(context);
-      this.player.update();
+    render(context, deltaTime) {
+      if (this.timer > this.interval) {
+        ctx.clearRect(0, 0, this.width, this.height); //redraw and delete past image
+        //animate next frame
+        this.obstacles.forEach((obstacle) => obstacle.draw(context));
+        this.player.draw(context);
+        this.player.update();
+        this.timer = 0;
+      }
+      this.timer += deltaTime;
     }
 
     checkCollision(a, b) {
@@ -269,12 +278,17 @@ window.addEventListener("load", function () {
   const game = new Game(canvas);
   game.init();
   //   console.log(game);
-  function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    game.render(ctx);
+  let lastTime = 0;
+  function animate(timeStamp) {
+    // console.log(timeStamp);
+    const deltaTime = timeStamp - lastTime;
+    lastTime = timeStamp;
+    // console.log(deltaTime); //1000/60 = 16.6; will be smaller with a higher solution
+    // ctx.clearRect(0, 0, canvas.width, canvas.height); // comment this out for animation to shut down auto re-rendering
+    game.render(ctx, deltaTime);
     //   console.log(game);
-    window.requestAnimationFrame(animate);
+    requestAnimationFrame(animate); // will automatically try to adjust itself to the screen refresh rate, in most cases 60 frames per second; will also automatically generate a timestamp
   }
 
-  animate();
+  animate(0);
 });
