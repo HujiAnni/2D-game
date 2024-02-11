@@ -19,6 +19,7 @@
   /* make sure it doesn't interfere with mouse event on canvas */
 }
 #obstacles,
-#bull {
+#bull,
+#egg {
   display: none;
 }

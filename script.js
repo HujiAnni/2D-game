@@ -172,6 +172,74 @@ window.addEventListener("load", function () {
         context.stroke();
       }
     }
+
+    update() {
+      // interactions
+    }
+  }
+  class Egg {
+    constructor(game) {
+      this.game = game;
+      this.collisionRadius = 40;
+      this.margin = this.collisionRadius * 2;
+      this.collisionX =
+        this.margin + Math.random() * (this.game.width - this.margin * 2);
+      this.collisionY =
+        this.game.topMargin +
+        Math.random() * (this.game.height - this.game.topMargin - this.margin);
+      this.image = document.getElementById("egg");
+      this.spriteWidth = 110;
+      this.spriteHeight = 135;
+      this.width = this.spriteWidth;
+      this.height = this.spriteHeight;
+      this.spriteX;
+      this.spriteY;
+    }
+
+    draw(context) {
+      context.drawImage(this.image, this.spriteX, this.spriteY);
+      if (this.game.debug) {
+        context.beginPath();
+        context.arc(
+          this.collisionX,
+          this.collisionY,
+          this.collisionRadius,
+          0,
+          Math.PI * 2
+        );
+        context.save();
+        context.globalAlpha = 0.5;
+        context.fill();
+        context.restore();
+        context.stroke();
+      }
+    }
+
+    update() {
+      this.spriteX = this.collisionX - this.width * 0.5;
+      this.spriteY = this.collisionY - this.height * 0.5 - 25;
+      let collisionObjects = [this.game.player, ...this.game.obstacles];
+      collisionObjects.forEach((object) => {
+        let [collision, distance, sumOfRadii, dx, dy] =
+          this.game.checkCollision(this, object);
+        if (collision) {
+          const unit_x = dx / distance;
+          const unit_y = dy / distance;
+          this.collisionX = object.collisionX + (sumOfRadii + 1) * unit_x;
+          this.collisionY = object.collisionY + (sumOfRadii + 1) * unit_y;
+        }
+      });
+    }
+  }
+
+  class Enermy {
+    constructor(game) {
+      this.game = game;
+      this.collisionRadius = 30;
+      this.collisionX = this.game.width;
+      this.collisionY = Math.random() * this.game.height;
+      this.speedX = Math.random() * 3 + 0.5;
+    }
   }
 
   class Game {
@@ -185,8 +253,13 @@ window.addEventListener("load", function () {
       this.fps = 70; // the actual will be a little smaller
       this.timer = 0;
       this.interval = 1000 / this.fps;
+      this.eggTimer = 0;
+      this.eggInterval = 1000;
       this.numberOfObstacles = 10;
+      this.maxEggs = 10;
       this.obstacles = [];
+      this.eggs = [];
+      this.gameObjects = [];
       this.mouse = {
         x: this.width * 0.5,
         y: this.height * 0.5,
@@ -222,13 +295,41 @@ window.addEventListener("load", function () {
     render(context, deltaTime) {
       if (this.timer > this.interval) {
         ctx.clearRect(0, 0, this.width, this.height); //redraw and delete past image
+        this.gameObjects = [...this.eggs, ...this.obstacles, this.player];
+        // sort by vertical position
+        this.gameObjects.sort((a, b) => {
+          return a.collisionY - b.collisionY;
+        });
+        this.gameObjects.forEach((object) => {
+          object.draw(context);
+          object.update();
+        });
+        // the below were commented out as we redefined the displaying order of the objects
+        // this.obstacles.forEach((obstacle) => obstacle.draw(context));
+        // this.eggs.forEach((egg) => {
+        //   egg.draw(context);
+        //   egg.update();
+        // });
+        // this.player.draw(context);
+        // this.player.update();
+
         //animate next frame
-        this.obstacles.forEach((obstacle) => obstacle.draw(context));
-        this.player.draw(context);
-        this.player.update();
+
         this.timer = 0;
       }
       this.timer += deltaTime;
+
+      // add eggs periodically
+      if (this.eggTimer > this.eggInterval && this.eggs.length < this.maxEggs) {
+        this.addEgg();
+        // console.log(this.eggs);
+        this.eggTimer = 0;
+      } else {
+        // console.log(`Delta Time: ${deltaTime}`);
+        // console.log(`Egg Timer: ${this.eggTimer}`);
+        // console.log(`Egg Interval: ${this.eggInterval}`);
+        this.eggTimer += deltaTime;
+      }
     }
 
     checkCollision(a, b) {
@@ -239,6 +340,9 @@ window.addEventListener("load", function () {
       return [distance < sumOfRadii, distance, sumOfRadii, dx, dy];
     }
 
+    addEgg() {
+      this.eggs.push(new Egg(this));
+    }
     init() {
       //   for (let i = 0; i < this.numberOfObstacles; i++) {
       //     this.obstacles.push(new Obstacle(this));
@@ -285,6 +389,7 @@ window.addEventListener("load", function () {
     lastTime = timeStamp;
     // console.log(deltaTime); //1000/60 = 16.6; will be smaller with a higher solution
     // ctx.clearRect(0, 0, canvas.width, canvas.height); // comment this out for animation to shut down auto re-rendering
+    // console.log(deltaTime);
     game.render(ctx, deltaTime);
     //   console.log(game);
     requestAnimationFrame(animate); // will automatically try to adjust itself to the screen refresh rate, in most cases 60 frames per second; will also automatically generate a timestamp
