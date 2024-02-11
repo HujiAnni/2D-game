@@ -177,6 +177,7 @@ window.addEventListener("load", function () {
       // interactions
     }
   }
+
   class Egg {
     constructor(game) {
       this.game = game;
@@ -218,7 +219,11 @@ window.addEventListener("load", function () {
     update() {
       this.spriteX = this.collisionX - this.width * 0.5;
       this.spriteY = this.collisionY - this.height * 0.5 - 25;
-      let collisionObjects = [this.game.player, ...this.game.obstacles];
+      let collisionObjects = [
+        this.game.player,
+        ...this.game.obstacles,
+        ...this.game.enemies,
+      ];
       collisionObjects.forEach((object) => {
         let [collision, distance, sumOfRadii, dx, dy] =
           this.game.checkCollision(this, object);
@@ -232,13 +237,75 @@ window.addEventListener("load", function () {
     }
   }
 
+  class Larva {
+    constructor(game, x, y) {
+      this.game = game;
+      this.collisionX = x;
+      this.collisionY = y;
+      this.collisionRadius = 30;
+      this.image = document.getElementById("larva");
+    }
+  }
   class Enermy {
     constructor(game) {
       this.game = game;
       this.collisionRadius = 30;
-      this.collisionX = this.game.width;
-      this.collisionY = Math.random() * this.game.height;
+
       this.speedX = Math.random() * 3 + 0.5;
+      this.image = document.getElementById("toad");
+      this.spriteWidth = 140;
+      this.spriteHeight = 260;
+      this.width = this.spriteWidth;
+      this.height = this.spriteHeight;
+      this.collisionX = this.game.width;
+      this.collisionY =
+        this.game.topMargin +
+        Math.random() * (this.game.height - this.game.topMargin);
+      this.spriteX;
+      this.spriteY;
+    }
+
+    draw(context) {
+      context.drawImage(this.image, this.spriteX, this.spriteY);
+      if (this.game.debug) {
+        context.beginPath();
+        context.arc(
+          this.collisionX,
+          this.collisionY,
+          this.collisionRadius,
+          0,
+          Math.PI * 2
+        );
+        context.save();
+        context.globalAlpha = 0.5;
+        context.fill();
+        context.restore();
+        context.stroke();
+      }
+    }
+
+    update() {
+      this.spriteX = this.collisionX - this.width * 0.5;
+      this.spriteY = this.collisionY - this.height + 40;
+      this.collisionX -= this.speedX;
+      if (this.spriteX + this.width < 0) {
+        this.collisionX =
+          this.game.width + this.width + Math.random() * this.game.width * 0.5;
+        this.collisionY =
+          this.game.topMargin +
+          Math.random() * (this.game.height - this.game.topMargin);
+      }
+      let collisionObjects = [this.game.player, ...this.game.obstacles];
+      collisionObjects.forEach((object) => {
+        let [collision, distance, sumOfRadii, dx, dy] =
+          this.game.checkCollision(this, object);
+        if (collision) {
+          const unit_x = dx / distance;
+          const unit_y = dy / distance;
+          this.collisionX = object.collisionX + (sumOfRadii + 1) * unit_x;
+          this.collisionY = object.collisionY + (sumOfRadii + 1) * unit_y;
+        }
+      });
     }
   }
 
@@ -259,6 +326,7 @@ window.addEventListener("load", function () {
       this.maxEggs = 10;
       this.obstacles = [];
       this.eggs = [];
+      this.enemies = [];
       this.gameObjects = [];
       this.mouse = {
         x: this.width * 0.5,
@@ -295,7 +363,12 @@ window.addEventListener("load", function () {
     render(context, deltaTime) {
       if (this.timer > this.interval) {
         ctx.clearRect(0, 0, this.width, this.height); //redraw and delete past image
-        this.gameObjects = [...this.eggs, ...this.obstacles, this.player];
+        this.gameObjects = [
+          ...this.eggs,
+          ...this.obstacles,
+          ...this.enemies,
+          this.player,
+        ];
         // sort by vertical position
         this.gameObjects.sort((a, b) => {
           return a.collisionY - b.collisionY;
@@ -343,10 +416,19 @@ window.addEventListener("load", function () {
     addEgg() {
       this.eggs.push(new Egg(this));
     }
+
+    addEnemy() {
+      this.enemies.push(new Enermy(this));
+    }
+
     init() {
       //   for (let i = 0; i < this.numberOfObstacles; i++) {
       //     this.obstacles.push(new Obstacle(this));
       //   }
+      for (let i = 0; i < 3; i++) {
+        this.addEnemy();
+        // console.log(this.enemies);
+      }
       let attempts = 0;
       while (this.obstacles.length < this.numberOfObstacles && attempts < 500) {
         let testObstacle = new Obstacle(this);
