@@ -513,7 +513,7 @@ window.addEventListener("load", function () {
       this.topMargin = 260;
       this.debug = true;
       this.player = new Player(this);
-      this.fps = 70; // the actual will be a little smaller
+      this.fps = 60; // the actual will be a little smaller
       this.timer = 0;
       this.interval = 1000 / this.fps;
       this.eggTimer = 0;
@@ -527,7 +527,7 @@ window.addEventListener("load", function () {
       this.particles = [];
       this.gameObjects = [];
       this.score = 0;
-      this.winningScore = 5;
+      this.winningScore = 10;
       this.lostHatchlings = 0;
       this.gameOver = false;
       this.mouse = {
@@ -558,9 +558,9 @@ window.addEventListener("load", function () {
       });
       window.addEventListener("keydown", (e) => {
         // console.log(e);
-        if (e.key == "d") this.debug = !this.debug;
+        // if (e.key == "d") this.debug = !this.debug; // add else before the if below if uncommented
         // console.log(this.debug);
-        else if (e.key == "r") this.restart();
+        if (e.key == "r") this.restart();
       });
     }
     render(context, deltaTime) {
