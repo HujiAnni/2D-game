@@ -14,7 +14,7 @@ Some adjustment was made for improved performance and clarity of the game.
 
 ## Demo
 
-<img src="" alt="Demo GIF" style="height: 500px">
+<img src="protect-the-larva.gif" alt="Demo GIF" style="height: 500px">
 
 <br>
 
