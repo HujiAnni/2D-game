@@ -513,7 +513,7 @@ window.addEventListener("load", function () {
       this.topMargin = 260;
       this.debug = true;
       this.player = new Player(this);
-      this.fps = 80; // the actual will be a little smaller
+      this.fps = 100; // the actual will be a little smaller
       this.timer = 0;
       this.interval = 1000 / this.fps;
       this.eggTimer = 0;
@@ -559,7 +559,7 @@ window.addEventListener("load", function () {
       window.addEventListener("keydown", (e) => {
         // console.log(e);
         // if (e.key == "d") this.debug = !this.debug;
-        if (true) this.debug = !this.debug;
+        if (false) this.debug = !this.debug;
         // console.log(this.debug);
         else if (e.key == "r") this.restart();
       });
