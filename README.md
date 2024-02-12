@@ -1,6 +1,6 @@
 # Protect the Larva
 
-<img src="https://pyxis.nymag.com/v1/imgs/91e/001/973cb64ce94251d70694bcc566c39fb172-24-frankenstein.2x.rsocial.w600.jpg" alt="Intro Image">
+<img src="./demo.png" alt="Intro Image">
 
 A simple but fun 2D game! Try and see if you can protect the Larva the Eggs hatched!
 Languages: Javascript, CSS, and HTML
