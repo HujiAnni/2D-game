@@ -513,7 +513,7 @@ window.addEventListener("load", function () {
       this.topMargin = 260;
       this.debug = true;
       this.player = new Player(this);
-      this.fps = 60; // the actual will be a little smaller
+      this.fps = 80; // the actual will be a little smaller
       this.timer = 0;
       this.interval = 1000 / this.fps;
       this.eggTimer = 0;
