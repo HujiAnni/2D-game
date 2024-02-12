@@ -511,7 +511,8 @@ window.addEventListener("load", function () {
       this.width = this.canvas.width;
       this.height = this.canvas.height;
       this.topMargin = 260;
-      this.debug = true;
+      this.debug = false;
+      //   this.debug = true;
       this.player = new Player(this);
       this.fps = 100; // the actual will be a little smaller
       this.timer = 0;
@@ -558,8 +559,8 @@ window.addEventListener("load", function () {
       });
       window.addEventListener("keydown", (e) => {
         // console.log(e);
+        if (e.key == "d") this.debug = this.debug;
         // if (e.key == "d") this.debug = !this.debug;
-        if (false) this.debug = !this.debug;
         // console.log(this.debug);
         else if (e.key == "r") this.restart();
       });
