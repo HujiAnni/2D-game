@@ -36,5 +36,3 @@ Score 10 to win, and press 'R' to restart the game whenever you want.
 - [ ] Make the playing area responsive to different device type (instead of fixed width and height)
 - [ ] Add more diversity to the enemies
 - [ ] Optimize the scoring structure
-
-      <br>
