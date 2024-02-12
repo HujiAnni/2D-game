@@ -558,9 +558,10 @@ window.addEventListener("load", function () {
       });
       window.addEventListener("keydown", (e) => {
         // console.log(e);
-        // if (e.key == "d") this.debug = !this.debug; // add else before the if below if uncommented
+        // if (e.key == "d") this.debug = !this.debug;
+        if (true) this.debug = !this.debug;
         // console.log(this.debug);
-        if (e.key == "r") this.restart();
+        else if (e.key == "r") this.restart();
       });
     }
     render(context, deltaTime) {
